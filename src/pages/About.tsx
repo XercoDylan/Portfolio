@@ -92,6 +92,14 @@ const About = () => {
         >
           <span className="text-code-comment">//</span> LinkedIn
         </a>
+        <a
+          href="https://www.roblox.com/users/2725853180/profile"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="terminal-window px-6 py-2 hover-glow"
+        >
+          <span className="text-code-comment">//</span> Roblox
+        </a>
       </motion.div>
     </motion.div>
   );

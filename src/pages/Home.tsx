@@ -113,7 +113,7 @@ const Home = () => {
         className="mt-8 text-center"
       >
         <p className="text-terminal-text/80 text-lg">
-          Computer Enthusiast, Developer, and Student
+          Computer Enthusiast, Developer, and Student currenty getting proficient in:
         </p>
       </motion.div>
 

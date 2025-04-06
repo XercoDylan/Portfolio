@@ -11,29 +11,15 @@ interface DesignWork {
   tools: string[];
 }
 
-const designWorks: DesignWork[] = Array.from({ length: 40 }, (_, i) => ({
-  id: i + 1,
-  title: 'Graphic Design',
-  description: 'Design work',
-  image: `/design/graphic-${i + 1}.png`,
-  category: 'other',
-  tools: ['Photoshop', 'Blender'],
-}));
-
-// Override specific categories for known items
-designWorks[0].category = '1v1.lol'; // graphic-1
-designWorks[5].category = '1v1.lol'; // graphic-6
-designWorks[6].category = '1v1.lol'; // graphic-7
-designWorks[2].category = 'roblox';  // graphic-3
-designWorks[3].category = 'roblox';  // graphic-4
-designWorks[4].category = 'roblox';  // graphic-5
-designWorks[7].category = 'roblox';  // graphic-8
-designWorks[8].category = 'roblox';  // graphic-9
-designWorks[10].category = 'roblox'; // graphic-11
-designWorks[11].category = 'roblox'; // graphic-12
-designWorks[12].category = 'roblox'; // graphic-13
-designWorks[13].category = 'roblox'; // graphic-14
-designWorks[14].category = 'roblox'; // graphic-15
+// Fisher-Yates shuffle algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
 
 const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }) => {
   const { ref, inView } = useInView({
@@ -84,31 +70,68 @@ const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }
 };
 
 const Design = () => {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox'  | 'other'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox' | 'other'>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [designs, setDesigns] = useState<DesignWork[]>([]);
 
   useEffect(() => {
-    // Preload images
-    const preloadImages = async () => {
-      const imagePromises = designWorks.map(work => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = work.image;
-          img.onload = resolve;
-          img.onerror = resolve; // Resolve even on error to not block loading
-        });
-      });
-      
-      await Promise.all(imagePromises);
-      setIsLoading(false);
-    };
-    
-    preloadImages();
+    // Create the initial designs array
+    const initialDesigns: DesignWork[] = Array.from({ length: 40 }, (_, i) => ({
+      id: i + 1,
+      title: 'Graphic Design',
+      description: 'Design work',
+      image: `/design/graphic-${i + 1}.png`,
+      category: 'other',
+      tools: ['Photoshop', 'Blender'],
+    }));
+
+    // Set specific categories for known items
+    initialDesigns[0].category = '1v1.lol';
+    initialDesigns[1].category = 'other';
+    initialDesigns[2].category = 'roblox';
+    initialDesigns[3].category = 'roblox';
+    initialDesigns[4].category = 'roblox';
+    initialDesigns[5].category = '1v1.lol';
+    initialDesigns[6].category = '1v1.lol';
+    initialDesigns[7].category = 'roblox';  
+    initialDesigns[8].category = 'roblox';
+    initialDesigns[9].category = 'other';
+    initialDesigns[10].category = 'roblox';
+    initialDesigns[11].category = 'roblox';
+    initialDesigns[12].category = 'roblox';
+    initialDesigns[13].category = 'roblox';
+    initialDesigns[14].category = 'roblox';
+    initialDesigns[15].category = 'roblox';
+    initialDesigns[16].category = 'roblox';
+    initialDesigns[17].category = 'roblox';
+    initialDesigns[18].category = 'roblox';
+    initialDesigns[19].category = 'roblox';
+    initialDesigns[20].category = 'roblox';
+    initialDesigns[21].category = 'roblox';
+    initialDesigns[22].category = 'roblox';
+    initialDesigns[23].category = 'roblox';
+    initialDesigns[24].category = 'roblox';
+    initialDesigns[25].category = 'roblox';
+    initialDesigns[26].category = 'other';
+    initialDesigns[27].category = 'other';
+    initialDesigns[28].category = 'roblox';
+    initialDesigns[29].category = 'roblox';
+    initialDesigns[30].category = 'roblox';
+    initialDesigns[31].category = 'roblox';
+    initialDesigns[32].category = '1v1.lol';
+    initialDesigns[33].category = 'roblox';
+    initialDesigns[34].category = 'roblox';
+    initialDesigns[35].category = 'roblox';
+    initialDesigns[36].category = 'roblox';
+    initialDesigns[37].category = 'roblox';
+    initialDesigns[38].category = 'roblox';
+    initialDesigns[39].category = 'roblox';
+    // Shuffle the designs array
+    setDesigns(shuffleArray(initialDesigns));
   }, []);
 
-  const filteredWorks = designWorks.filter(
-    (work) => selectedCategory === 'all' || work.category === selectedCategory
+  const filteredDesigns = designs.filter(
+    (design) => selectedCategory === 'all' || design.category === selectedCategory
   );
 
   return (
@@ -155,21 +178,15 @@ const Design = () => {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="terminal-window p-8 flex justify-center items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-terminal-accent"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredWorks.map((work) => (
-              <DesignCard
-                key={work.id}
-                work={work}
-                onClick={() => setSelectedImage(work.image)}
-              />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredDesigns.map((design) => (
+            <DesignCard
+              key={design.id}
+              work={design}
+              onClick={() => setSelectedImage(design.image)}
+            />
+          ))}
+        </div>
 
         <motion.div
           initial={{ opacity: 0 }}

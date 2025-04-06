@@ -35,6 +35,36 @@ const projects: Project[] = [
     github: '',
     gameLink: 'https://www.roblox.com/games/15111490249/Rage-Ball',
     category: 'game'
+  },
+  {
+    id: 3,
+    title: 'Sword Royale',
+    description: 'Battle royale styled game where players fight to be the last one standing',
+    image: '/design/graphic-38.png',
+    tech: ['Roblox Studio'],
+    github: '',
+    gameLink: 'https://www.roblox.com/games/14157726560/Sword-Royale',
+    category: 'game'
+  },
+  {
+    id: 4,
+    title: 'Trade Protect RX',
+    description: 'Trade Protect RX is An app that streamlines the ordering and delivery of personal protective equipment through TradeProtectRx, LLC.',
+    image: '/projects/trade.png',
+    tech: ['Xcode', 'Swift', 'SwiftUI', 'Firebase'],
+    github: '',
+    demoLink: 'https://apps.apple.com/us/app/trade-protect-rx/id6639664911',
+    category: 'app'
+  },
+  {
+    id: 5,
+    title: 'Portfolio Website',
+    description: 'My portfolio website built with React, Next.js, and Tailwind CSS.',
+    image: '/projects/portfolio.png',
+    tech: ['React', 'Next.js', 'Tailwind CSS'],
+    github: '',
+    demoLink: 'xerco.org',
+    category: 'web'
   }
 ];
 
