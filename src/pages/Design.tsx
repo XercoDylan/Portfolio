@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 interface DesignWork {
@@ -15,7 +15,7 @@ const designWorks: DesignWork[] = Array.from({ length: 40 }, (_, i) => ({
   id: i + 1,
   title: 'Graphic Design',
   description: 'Design work',
-  image: `/design/graphic-${i + 1}.png?format=webp&w=800&q=80`,
+  image: `/design/graphic-${i + 1}.png`,
   category: 'other',
   tools: ['Photoshop', 'Blender'],
 }));
@@ -37,15 +37,15 @@ designWorks[14].category = 'roblox'; // graphic-15
 
 const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }) => {
   const { ref, inView } = useInView({
-    triggerOnce: true,
-    rootMargin: '50px 0px',
+    triggerOnce: false,
+    rootMargin: '100px 0px',
   });
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       className="terminal-window overflow-hidden"
     >
@@ -53,14 +53,12 @@ const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }
         className="relative aspect-video bg-code-bg cursor-pointer"
         onClick={onClick}
       >
-        {inView && (
-          <img
-            src={work.image}
-            alt={work.title}
-            className="absolute inset-0 w-full h-full object-contain bg-code-bg"
-            loading="lazy"
-          />
-        )}
+        <img
+          src={work.image}
+          alt={work.title}
+          className="absolute inset-0 w-full h-full object-contain bg-code-bg"
+          loading="lazy"
+        />
       </div>
       <div className="p-4">
         <div className="code-block">
@@ -88,6 +86,26 @@ const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }
 const Design = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox'  | 'other'>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Preload images
+    const preloadImages = async () => {
+      const imagePromises = designWorks.map(work => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = work.image;
+          img.onload = resolve;
+          img.onerror = resolve; // Resolve even on error to not block loading
+        });
+      });
+      
+      await Promise.all(imagePromises);
+      setIsLoading(false);
+    };
+    
+    preloadImages();
+  }, []);
 
   const filteredWorks = designWorks.filter(
     (work) => selectedCategory === 'all' || work.category === selectedCategory
@@ -137,15 +155,21 @@ const Design = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredWorks.map((work) => (
-            <DesignCard
-              key={work.id}
-              work={work}
-              onClick={() => setSelectedImage(work.image)}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="terminal-window p-8 flex justify-center items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-terminal-accent"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredWorks.map((work) => (
+              <DesignCard
+                key={work.id}
+                work={work}
+                onClick={() => setSelectedImage(work.image)}
+              />
+            ))}
+          </div>
+        )}
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -190,7 +214,6 @@ const Design = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="max-h-[90vh] max-w-[90vw] object-contain"
-              loading="lazy"
             />
           </motion.div>
         )}

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 interface Project {
@@ -19,7 +19,7 @@ const projects: Project[] = [
     id: 1,
     title: 'The Floor is Lava',
     description: 'Floor is lava game where the player has to avoid lava by climbing high up',
-    image: '/projects/lava.png?format=webp&w=800&q=80',
+    image: '/projects/lava.png',
     tech: ['Roblox Studio'],
     github: '',
     demoLink: 'https://www.roblox.com/games/12492690437/The-Floor-Is-Lava',
@@ -30,37 +30,35 @@ const projects: Project[] = [
     id: 2,
     title: 'Rage Ball',
     description: 'Rage Ball is a fast-paced arena game where players deflect a homing ball with swords to eliminate each other and be the last one standing.',
-    image: '/projects/rageball.png?format=webp&w=800&q=80',
+    image: '/projects/rageball.png',
     tech: ['Roblox Studio'],
     github: '',
     gameLink: 'https://www.roblox.com/games/15111490249/Rage-Ball',
     category: 'game'
-  },
+  }
 ];
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const { ref, inView } = useInView({
-    triggerOnce: true,
-    rootMargin: '50px 0px',
+    triggerOnce: false,
+    rootMargin: '100px 0px',
   });
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, scale: 0.9 }}
-      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       className="terminal-window overflow-hidden"
     >
       <div className="relative aspect-video bg-code-bg">
-        {inView && (
-          <img
-            src={project.image}
-            alt={project.title}
-            className="absolute inset-0 w-full h-full object-contain bg-code-bg"
-            loading="lazy"
-          />
-        )}
+        <img
+          src={project.image}
+          alt={project.title}
+          className="absolute inset-0 w-full h-full object-contain bg-code-bg"
+          loading="lazy"
+        />
       </div>
       <div className="p-4">
         <div className="code-block">
@@ -125,9 +123,29 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'web' | 'game' | 'app'>('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Preload images
+    const preloadImages = async () => {
+      const imagePromises = projects.map(project => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = project.image;
+          img.onload = resolve;
+          img.onerror = resolve; // Resolve even on error to not block loading
+        });
+      });
+      
+      await Promise.all(imagePromises);
+      setIsLoading(false);
+    };
+    
+    preloadImages();
+  }, []);
 
   const filteredProjects = projects.filter(
-    project => selectedCategory === 'all' || project.category === selectedCategory
+    (project) => selectedCategory === 'all' || project.category === selectedCategory
   );
 
   return (
@@ -173,11 +191,17 @@ const Projects = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="terminal-window p-8 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-terminal-accent"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0 }}
