@@ -10,120 +10,29 @@ interface DesignWork {
   tools: string[];
 }
 
-const designWorks: DesignWork[] = [
-  {
-    id: 1,
-    title: 'Graphic Design',
-    description: '1v1.lol zombie game mode thumbnail',
-    image: '/design/graphic-1.png',
-    category: '1v1.lol',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 2,
-    title: 'Graphic Design',
-    description: 'mbappe world cup 2018 poster',
-    image: '/design/graphic-2.png',
-    category: 'other',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 3,
-    title: 'Graphic Design',
-    description: 'emote town roblox game icon',
-    image: '/design/graphic-3.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 4,
-    title: 'Graphic Design',
-    description: 'youtube live thumbnail for roblox game called strucid',
-    image: '/design/graphic-4.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 5,
-    title: 'Graphic Design',
-    description: 'gaming legends roblox game icon',
-    image: '/design/graphic-5.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 6,
-    title: 'Graphic Design',
-    description: '1v1.lol fashion show thumbnail',
-    image: '/design/graphic-6.png',
-    category: '1v1.lol',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 7,
-    title: 'Graphic Design',
-    description: '1v1.lol montage thumbnail',
-    image: '/design/graphic-7.png',
-    category: '1v1.lol',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 8,
-    title: 'Graphic Design',
-    description: 'gaming legends roblox game icon',
-    image: '/design/graphic-8.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 9,
-    title: 'Graphic Design',
-    description: 'gaming legends roblox game thumbnail',
-    image: '/design/graphic-9.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 11,
-    title: 'Graphic Design',
-    description: 'gaming legends roblox game icon',
-    image: '/design/graphic-11.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 12,
-    title: 'Graphic Design',
-    description: 'gaming legends roblox game icon',
-    image: '/design/graphic-12.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 13,
-    title: 'Graphic Design',
-    description: 'pop it simulator roblox game icon',
-    image: '/design/graphic-13.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 14,
-    title: 'Graphic Design',
-    description: 'youtube profile picture',
-    image: '/design/graphic-14.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-  {
-    id: 15,
-    title: 'Graphic Design',
-    description: 'scripting tutorial thumbnail',
-    image: '/design/graphic-15.png',
-    category: 'roblox',
-    tools: ['Photoshop', 'Blender'],
-  },
-];
+const designWorks: DesignWork[] = Array.from({ length: 40 }, (_, i) => ({
+  id: i + 1,
+  title: 'Graphic Design',
+  description: 'Design work',
+  image: `/design/graphic-${i + 1}.png`,
+  category: 'other',
+  tools: ['Photoshop', 'Blender'],
+}));
+
+// Override specific categories for known items
+designWorks[0].category = '1v1.lol'; // graphic-1
+designWorks[5].category = '1v1.lol'; // graphic-6
+designWorks[6].category = '1v1.lol'; // graphic-7
+designWorks[2].category = 'roblox';  // graphic-3
+designWorks[3].category = 'roblox';  // graphic-4
+designWorks[4].category = 'roblox';  // graphic-5
+designWorks[7].category = 'roblox';  // graphic-8
+designWorks[8].category = 'roblox';  // graphic-9
+designWorks[10].category = 'roblox'; // graphic-11
+designWorks[11].category = 'roblox'; // graphic-12
+designWorks[12].category = 'roblox'; // graphic-13
+designWorks[13].category = 'roblox'; // graphic-14
+designWorks[14].category = 'roblox'; // graphic-15
 
 const Design = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox'  | 'other'>('all');
