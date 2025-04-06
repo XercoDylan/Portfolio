@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 interface Project {
   id: number;
@@ -18,7 +19,7 @@ const projects: Project[] = [
     id: 1,
     title: 'The Floor is Lava',
     description: 'Floor is lava game where the player has to avoid lava by climbing high up',
-    image: '/projects/lava.png',
+    image: '/projects/lava.png?format=webp&w=800&q=80',
     tech: ['Roblox Studio'],
     github: '',
     demoLink: 'https://www.roblox.com/games/12492690437/The-Floor-Is-Lava',
@@ -29,14 +30,98 @@ const projects: Project[] = [
     id: 2,
     title: 'Rage Ball',
     description: 'Rage Ball is a fast-paced arena game where players deflect a homing ball with swords to eliminate each other and be the last one standing.',
-    image: '/projects/rageball.png',
+    image: '/projects/rageball.png?format=webp&w=800&q=80',
     tech: ['Roblox Studio'],
     github: '',
     gameLink: 'https://www.roblox.com/games/15111490249/Rage-Ball',
     category: 'game'
   },
-
 ];
+
+const ProjectCard = ({ project }: { project: Project }) => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: '50px 0px',
+  });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      whileHover={{ scale: 1.02 }}
+      className="terminal-window overflow-hidden"
+    >
+      <div className="relative aspect-video bg-code-bg">
+        {inView && (
+          <img
+            src={project.image}
+            alt={project.title}
+            className="absolute inset-0 w-full h-full object-contain bg-code-bg"
+            loading="lazy"
+          />
+        )}
+      </div>
+      <div className="p-4">
+        <div className="code-block">
+          <p className="text-code-comment">// {project.title}</p>
+          <p className="text-code-string mt-2">{project.description}</p>
+          <div className="mt-4">
+            <p className="text-code-comment">// Tech Stack</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {project.tech.map((tech) => (
+                <span
+                  key={tech}
+                  className="px-2 py-1 bg-terminal-accent/10 rounded text-sm"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4 flex gap-4">
+            {project.category !== 'game' && project.github && (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover-glow"
+              >
+                <span className="text-code-comment">// </span>
+                View Code
+              </a>
+            )}
+            {project.category === 'game' ? (
+              project.gameLink && (
+                <a
+                  href={project.gameLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover-glow"
+                >
+                  <span className="text-code-comment">// </span>
+                  Play Game
+                </a>
+              )
+            ) : (
+              project.demoLink && (
+                <a
+                  href={project.demoLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover-glow"
+                >
+                  <span className="text-code-comment">// </span>
+                  Live Demo
+                </a>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Projects = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'web' | 'game' | 'app'>('all');
@@ -90,78 +175,7 @@ const Projects = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredProjects.map((project) => (
-          <motion.div
-            key={project.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.02 }}
-            className="terminal-window overflow-hidden"
-          >
-            <div className="relative aspect-video bg-code-bg">
-              <img
-                src={project.image}
-                alt={project.title}
-                className="absolute inset-0 w-full h-full object-contain bg-code-bg"
-              />
-            </div>
-            <div className="p-4">
-              <div className="code-block">
-                <p className="text-code-comment">// {project.title}</p>
-                <p className="text-code-string mt-2">{project.description}</p>
-                <div className="mt-4">
-                  <p className="text-code-comment">// Tech Stack</p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {project.tech.map((tech) => (
-                      <span
-                        key={tech}
-                        className="px-2 py-1 bg-terminal-accent/10 rounded text-sm"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="mt-4 flex gap-4">
-                  {project.category !== 'game' && project.github && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover-glow"
-                    >
-                      <span className="text-code-comment">// </span>
-                      View Code
-                    </a>
-                  )}
-                  {project.category === 'game' ? (
-                    project.gameLink && (
-                      <a
-                        href={project.gameLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover-glow"
-                      >
-                        <span className="text-code-comment">// </span>
-                        Play Game
-                      </a>
-                    )
-                  ) : (
-                    project.demoLink && (
-                      <a
-                        href={project.demoLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover-glow"
-                      >
-                        <span className="text-code-comment">// </span>
-                        Live Demo
-                      </a>
-                    )
-                  )}
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          <ProjectCard key={project.id} project={project} />
         ))}
       </div>
 

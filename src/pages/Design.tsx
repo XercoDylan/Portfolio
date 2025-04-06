@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 interface DesignWork {
   id: number;
@@ -14,7 +15,7 @@ const designWorks: DesignWork[] = Array.from({ length: 40 }, (_, i) => ({
   id: i + 1,
   title: 'Graphic Design',
   description: 'Design work',
-  image: `/design/graphic-${i + 1}.png`,
+  image: `/design/graphic-${i + 1}.png?format=webp&w=800&q=80`,
   category: 'other',
   tools: ['Photoshop', 'Blender'],
 }));
@@ -33,6 +34,56 @@ designWorks[11].category = 'roblox'; // graphic-12
 designWorks[12].category = 'roblox'; // graphic-13
 designWorks[13].category = 'roblox'; // graphic-14
 designWorks[14].category = 'roblox'; // graphic-15
+
+const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }) => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: '50px 0px',
+  });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      whileHover={{ scale: 1.02 }}
+      className="terminal-window overflow-hidden"
+    >
+      <div 
+        className="relative aspect-video bg-code-bg cursor-pointer"
+        onClick={onClick}
+      >
+        {inView && (
+          <img
+            src={work.image}
+            alt={work.title}
+            className="absolute inset-0 w-full h-full object-contain bg-code-bg"
+            loading="lazy"
+          />
+        )}
+      </div>
+      <div className="p-4">
+        <div className="code-block">
+          <p className="text-code-comment">// {work.title}</p>
+          <p className="text-code-string mt-2">{work.description}</p>
+          <div className="mt-4">
+            <p className="text-code-comment">// Tools Used</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {work.tools.map((tool) => (
+                <span
+                  key={tool}
+                  className="px-2 py-1 bg-terminal-accent/10 rounded text-sm"
+                >
+                  {tool}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Design = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox'  | 'other'>('all');
@@ -88,43 +139,11 @@ const Design = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredWorks.map((work) => (
-            <motion.div
+            <DesignCard
               key={work.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02 }}
-              className="terminal-window overflow-hidden"
-            >
-              <div 
-                className="relative aspect-video bg-code-bg cursor-pointer"
-                onClick={() => setSelectedImage(work.image)}
-              >
-                <img
-                  src={work.image}
-                  alt={work.title}
-                  className="absolute inset-0 w-full h-full object-contain bg-code-bg"
-                />
-              </div>
-              <div className="p-4">
-                <div className="code-block">
-                  <p className="text-code-comment">// {work.title}</p>
-                  <p className="text-code-string mt-2">{work.description}</p>
-                  <div className="mt-4">
-                    <p className="text-code-comment">// Tools Used</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {work.tools.map((tool) => (
-                        <span
-                          key={tool}
-                          className="px-2 py-1 bg-terminal-accent/10 rounded text-sm"
-                        >
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              work={work}
+              onClick={() => setSelectedImage(work.image)}
+            />
           ))}
         </div>
 
@@ -171,6 +190,7 @@ const Design = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="max-h-[90vh] max-w-[90vw] object-contain"
+              loading="lazy"
             />
           </motion.div>
         )}
