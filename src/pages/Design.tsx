@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 import OptimizedImage from '../components/OptimizedImage';
 
@@ -22,9 +22,11 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return newArray;
 };
 
+const ITEMS_PER_PAGE = 8; // Load 8 items at a time
+
 const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }) => {
   const { ref, inView } = useInView({
-    triggerOnce: false,
+    triggerOnce: true,
     rootMargin: '100px 0px',
   });
 
@@ -75,7 +77,16 @@ const Design = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox' | 'other'>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [designs, setDesigns] = useState<DesignWork[]>([]);
+  const [visibleDesigns, setVisibleDesigns] = useState<DesignWork[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+
+  // Load more trigger using intersection observer
+  const { ref: loadMoreRef, inView: loadMoreInView } = useInView({
+    threshold: 0.1,
+    rootMargin: '100px 0px',
+  });
 
   useEffect(() => {
     // Create the initial designs array
@@ -90,59 +101,46 @@ const Design = () => {
 
     // Set specific categories for known items
     initialDesigns[0].category = '1v1.lol';
-    initialDesigns[1].category = 'other';
+    initialDesigns[5].category = '1v1.lol';
+    initialDesigns[6].category = '1v1.lol';
     initialDesigns[2].category = 'roblox';
     initialDesigns[3].category = 'roblox';
     initialDesigns[4].category = 'roblox';
-    initialDesigns[5].category = '1v1.lol';
-    initialDesigns[6].category = '1v1.lol';
-    initialDesigns[7].category = 'roblox';  
+    initialDesigns[7].category = 'roblox';
     initialDesigns[8].category = 'roblox';
-    initialDesigns[9].category = 'other';
     initialDesigns[10].category = 'roblox';
     initialDesigns[11].category = 'roblox';
     initialDesigns[12].category = 'roblox';
     initialDesigns[13].category = 'roblox';
     initialDesigns[14].category = 'roblox';
-    initialDesigns[15].category = 'roblox';
-    initialDesigns[16].category = 'roblox';
-    initialDesigns[17].category = 'roblox';
-    initialDesigns[18].category = 'roblox';
-    initialDesigns[19].category = 'roblox';
-    initialDesigns[20].category = 'roblox';
-    initialDesigns[21].category = 'roblox';
-    initialDesigns[22].category = 'roblox';
-    initialDesigns[23].category = 'roblox';
-    initialDesigns[24].category = 'roblox';
-    initialDesigns[25].category = 'roblox';
-    initialDesigns[26].category = 'other';
-    initialDesigns[27].category = 'other';
-    initialDesigns[28].category = 'roblox';
-    initialDesigns[29].category = 'roblox';
-    initialDesigns[30].category = 'roblox';
-    initialDesigns[31].category = 'roblox';
-    initialDesigns[32].category = '1v1.lol';
-    initialDesigns[33].category = 'roblox';
-    initialDesigns[34].category = 'roblox';
-    initialDesigns[35].category = 'roblox';
-    initialDesigns[36].category = 'roblox';
-    initialDesigns[37].category = 'roblox';
-    initialDesigns[38].category = 'roblox';
-    initialDesigns[39].category = 'roblox';
-    // Shuffle the designs array
+
+    // Shuffle and store the full array
     setDesigns(shuffleArray(initialDesigns));
-    
-    // Set loading to false after a short delay
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    setIsLoading(false);
   }, []);
 
-  const filteredDesigns = designs.filter(
-    (design) => selectedCategory === 'all' || design.category === selectedCategory
-  );
+  // Filter and paginate designs
+  useEffect(() => {
+    const filteredDesigns = designs.filter(
+      (design) => selectedCategory === 'all' || design.category === selectedCategory
+    );
+    
+    const visibleItems = filteredDesigns.slice(0, page * ITEMS_PER_PAGE);
+    setVisibleDesigns(visibleItems);
+    setHasMore(visibleItems.length < filteredDesigns.length);
+  }, [designs, selectedCategory, page]);
+
+  // Reset pagination when category changes
+  useEffect(() => {
+    setPage(1);
+  }, [selectedCategory]);
+
+  // Load more when scrolling to bottom
+  useEffect(() => {
+    if (loadMoreInView && hasMore && !isLoading) {
+      setPage(prev => prev + 1);
+    }
+  }, [loadMoreInView, hasMore, isLoading]);
 
   return (
     <motion.div
@@ -192,15 +190,27 @@ const Design = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-terminal-accent"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredDesigns.map((design) => (
-            <DesignCard
-              key={design.id}
-              work={design}
-              onClick={() => setSelectedImage(design.image)}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {visibleDesigns.map((design) => (
+              <DesignCard
+                key={design.id}
+                work={design}
+                onClick={() => setSelectedImage(design.image)}
+              />
+            ))}
+          </div>
+          
+          {/* Load more trigger */}
+          {hasMore && (
+            <div 
+              ref={loadMoreRef}
+              className="flex justify-center mt-8 p-4"
+            >
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-terminal-accent"></div>
+            </div>
+          )}
+        </>
       )}
 
       <motion.div
@@ -243,6 +253,7 @@ const Design = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="max-h-[90vh] max-w-[90vw]"
+              onClick={(e) => e.stopPropagation()}
             >
               <OptimizedImage
                 src={selectedImage}
