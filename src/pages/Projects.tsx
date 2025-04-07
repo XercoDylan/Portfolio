@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+import OptimizedImage from '../components/OptimizedImage';
 
 interface Project {
   id: number;
@@ -83,12 +84,13 @@ const ProjectCard = ({ project }: { project: Project }) => {
       className="terminal-window overflow-hidden"
     >
       <div className="relative aspect-video bg-code-bg">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="absolute inset-0 w-full h-full object-contain bg-code-bg"
-          loading="lazy"
-        />
+        {inView && (
+          <OptimizedImage
+            src={project.image}
+            alt={project.title}
+            className="absolute inset-0 w-full h-full"
+          />
+        )}
       </div>
       <div className="p-4">
         <div className="code-block">
@@ -156,22 +158,12 @@ const Projects = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Preload images
-    const preloadImages = async () => {
-      const imagePromises = projects.map(project => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.src = project.image;
-          img.onload = resolve;
-          img.onerror = resolve; // Resolve even on error to not block loading
-        });
-      });
-      
-      await Promise.all(imagePromises);
+    // Set loading to false after a short delay
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    };
+    }, 500);
     
-    preloadImages();
+    return () => clearTimeout(timer);
   }, []);
 
   const filteredProjects = projects.filter(

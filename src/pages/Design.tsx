@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+import OptimizedImage from '../components/OptimizedImage';
 
 interface DesignWork {
   id: number;
@@ -39,12 +40,13 @@ const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }
         className="relative aspect-video bg-code-bg cursor-pointer"
         onClick={onClick}
       >
-        <img
-          src={work.image}
-          alt={work.title}
-          className="absolute inset-0 w-full h-full object-contain bg-code-bg"
-          loading="lazy"
-        />
+        {inView && (
+          <OptimizedImage
+            src={work.image}
+            alt={work.title}
+            className="absolute inset-0 w-full h-full"
+          />
+        )}
       </div>
       <div className="p-4">
         <div className="code-block">
@@ -73,6 +75,7 @@ const Design = () => {
   const [selectedCategory, setSelectedCategory] = useState<'all' | '1v1.lol' | 'roblox' | 'other'>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [designs, setDesigns] = useState<DesignWork[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Create the initial designs array
@@ -128,6 +131,13 @@ const Design = () => {
     initialDesigns[39].category = 'roblox';
     // Shuffle the designs array
     setDesigns(shuffleArray(initialDesigns));
+    
+    // Set loading to false after a short delay
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const filteredDesigns = designs.filter(
@@ -135,49 +145,53 @@ const Design = () => {
   );
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="max-w-6xl mx-auto"
-      >
-        <div className="terminal-window mb-8">
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="w-3 h-3 rounded-full bg-terminal-error" />
-            <div className="w-3 h-3 rounded-full bg-terminal-warning" />
-            <div className="w-3 h-3 rounded-full bg-terminal-accent" />
-          </div>
-          <div className="code-block">
-            <p className="text-code-comment">// Design Portfolio</p>
-            <p className="text-code-string mt-2">
-              A showcase of my design work over the years
-            </p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="max-w-6xl mx-auto"
+    >
+      <div className="terminal-window mb-8">
+        <div className="flex items-center space-x-2 mb-4">
+          <div className="w-3 h-3 rounded-full bg-terminal-error" />
+          <div className="w-3 h-3 rounded-full bg-terminal-warning" />
+          <div className="w-3 h-3 rounded-full bg-terminal-accent" />
+        </div>
+        <div className="code-block">
+          <p className="text-code-comment">// Design Portfolio</p>
+          <p className="text-code-string mt-2">
+            A showcase of my design work over the years
+          </p>
+        </div>
+      </div>
+
+      <div className="terminal-window mb-8">
+        <div className="code-block">
+          <p className="text-code-comment">// Filter by Category</p>
+          <div className="flex flex-wrap gap-4 mt-4">
+            {(['all', '1v1.lol', 'roblox', 'other'] as const).map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded ${
+                  selectedCategory === category
+                    ? 'bg-terminal-accent text-terminal-bg'
+                    : 'hover-glow'
+                }`}
+              >
+                <span className="text-code-comment">//</span>{' '}
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
           </div>
         </div>
+      </div>
 
-        <div className="terminal-window mb-8">
-          <div className="code-block">
-            <p className="text-code-comment">// Filter by Category</p>
-            <div className="flex flex-wrap gap-4 mt-4">
-              {(['all', '1v1.lol', 'roblox', 'other'] as const).map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded ${
-                    selectedCategory === category
-                      ? 'bg-terminal-accent text-terminal-bg'
-                      : 'hover-glow'
-                  }`}
-                >
-                  <span className="text-code-comment">//</span>{' '}
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
+      {isLoading ? (
+        <div className="terminal-window p-8 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-terminal-accent"></div>
         </div>
-
+      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredDesigns.map((design) => (
             <DesignCard
@@ -187,32 +201,32 @@ const Design = () => {
             />
           ))}
         </div>
+      )}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 terminal-window"
-        >
-          <div className="code-block">
-            <p className="text-code-comment">// Design Skills</p>
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                'Post Effects',
-                '3D Posing',
-                'Prototyping',
-                'Typography'
-              ].map((skill) => (
-                <div
-                  key={skill}
-                  className="px-4 py-2 bg-terminal-accent/10 rounded text-center"
-                >
-                  {skill}
-                </div>
-              ))}
-            </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 terminal-window"
+      >
+        <div className="code-block">
+          <p className="text-code-comment">// Design Skills</p>
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              'Post Effects',
+              '3D Posing',
+              'Prototyping',
+              'Typography'
+            ].map((skill) => (
+              <div
+                key={skill}
+                className="px-4 py-2 bg-terminal-accent/10 rounded text-center"
+              >
+                {skill}
+              </div>
+            ))}
           </div>
-        </motion.div>
+        </div>
       </motion.div>
 
       <AnimatePresence>
@@ -224,18 +238,22 @@ const Design = () => {
             onClick={() => setSelectedImage(null)}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 cursor-pointer"
           >
-            <motion.img
-              src={selectedImage}
-              alt="Full size preview"
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="max-h-[90vh] max-w-[90vw] object-contain"
-            />
+              className="max-h-[90vh] max-w-[90vw]"
+            >
+              <OptimizedImage
+                src={selectedImage}
+                alt="Full size preview"
+                className="w-full h-full object-contain"
+              />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </motion.div>
   );
 };
 
