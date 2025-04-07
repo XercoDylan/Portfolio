@@ -61,7 +61,7 @@ const Resume = () => {
         </div>
       </div>
 
-      <div className="terminal-window h-[800px] resize overflow-hidden relative" style={{ resize: 'both' }}>
+      <div className="terminal-window h-[1100px] resize overflow-hidden relative" style={{ resize: 'both', minHeight: '1100px' }}>
         <div className="flex items-center space-x-2 mb-4">
           <div className="w-3 h-3 rounded-full bg-terminal-error" />
           <div className="w-3 h-3 rounded-full bg-terminal-warning" />
