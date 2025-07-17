@@ -113,7 +113,8 @@ const Design = () => {
     initialDesigns[12].category = 'roblox';
     initialDesigns[13].category = 'roblox';
     initialDesigns[14].category = 'roblox';
-
+    initialDesigns[41].category = 'roblox';
+    initialDesigns[42].category = 'roblox';
     // Shuffle and store the full array
     setDesigns(shuffleArray(initialDesigns));
     setIsLoading(false);

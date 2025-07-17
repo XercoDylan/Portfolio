@@ -18,6 +18,17 @@ interface Project {
 const projects: Project[] = [
   {
     id: 1,
+    title: 'Jump Rope [SQUID GAME SEASON 3]',
+    description: 'Remake of the game mode jump rope from squid game season 3',
+    image: '/projects/squid.png',
+    tech: ['Roblox Studio'],
+    github: '',
+    demoLink: 'https://www.roblox.com/games/109714103122635/Jump-Rope-SQUID-GAME-SEASON-3',
+    gameLink: 'https://www.roblox.com/games/109714103122635/Jump-Rope-SQUID-GAME-SEASON-3',
+    category: 'game'
+  },
+  {
+    id: 2,
     title: 'The Floor is Lava',
     description: 'Floor is lava game where the player has to avoid lava by climbing high up',
     image: '/projects/lava.png',
@@ -28,7 +39,7 @@ const projects: Project[] = [
     category: 'game'
   },
   {
-    id: 2,
+    id: 3,
     title: 'Rage Ball',
     description: 'Rage Ball is a fast-paced arena game where players deflect a homing ball with swords to eliminate each other and be the last one standing.',
     image: '/projects/rageball.png',
@@ -38,7 +49,7 @@ const projects: Project[] = [
     category: 'game'
   },
   {
-    id: 3,
+    id: 4,
     title: 'Sword Royale',
     description: 'Battle royale styled game where players fight to be the last one standing',
     image: '/design/graphic-38.png',
@@ -48,7 +59,7 @@ const projects: Project[] = [
     category: 'game'
   },
   {
-    id: 4,
+    id: 5,
     title: 'Trade Protect RX',
     description: 'Trade Protect RX is An app that streamlines the ordering and delivery of personal protective equipment through TradeProtectRx, LLC.',
     image: '/projects/trade.png',
@@ -58,7 +69,7 @@ const projects: Project[] = [
     category: 'app'
   },
   {
-    id: 5,
+    id: 6,
     title: 'Portfolio Website',
     description: 'My portfolio website built with React, Next.js, and Tailwind CSS.',
     image: '/projects/portfolio.png',
