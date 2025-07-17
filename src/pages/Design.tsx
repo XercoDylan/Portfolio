@@ -12,7 +12,6 @@ interface DesignWork {
   tools: string[];
 }
 
-// Fisher-Yates shuffle algorithm
 const shuffleArray = <T,>(array: T[]): T[] => {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -22,7 +21,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return newArray;
 };
 
-const ITEMS_PER_PAGE = 8; // Load 8 items at a time
+const ITEMS_PER_PAGE = 8;
 
 const DesignCard = ({ work, onClick }: { work: DesignWork; onClick: () => void }) => {
   const { ref, inView } = useInView({
@@ -82,15 +81,14 @@ const Design = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
 
-  // Load more trigger using intersection observer
+
   const { ref: loadMoreRef, inView: loadMoreInView } = useInView({
     threshold: 0.1,
     rootMargin: '100px 0px',
   });
 
   useEffect(() => {
-    // Create the initial designs array
-    const initialDesigns: DesignWork[] = Array.from({ length: 40 }, (_, i) => ({
+    const initialDesigns: DesignWork[] = Array.from({ length: 50 }, (_, i) => ({
       id: i + 1,
       title: 'Graphic Design',
       description: 'Design work',
@@ -99,7 +97,6 @@ const Design = () => {
       tools: ['Photoshop', 'Blender'],
     }));
 
-    // Set specific categories for known items
     initialDesigns[0].category = '1v1.lol';
     initialDesigns[5].category = '1v1.lol';
     initialDesigns[6].category = '1v1.lol';
@@ -115,12 +112,10 @@ const Design = () => {
     initialDesigns[14].category = 'roblox';
     initialDesigns[41].category = 'roblox';
     initialDesigns[42].category = 'roblox';
-    // Shuffle and store the full array
     setDesigns(shuffleArray(initialDesigns));
     setIsLoading(false);
   }, []);
 
-  // Filter and paginate designs
   useEffect(() => {
     const filteredDesigns = designs.filter(
       (design) => selectedCategory === 'all' || design.category === selectedCategory
@@ -131,12 +126,10 @@ const Design = () => {
     setHasMore(visibleItems.length < filteredDesigns.length);
   }, [designs, selectedCategory, page]);
 
-  // Reset pagination when category changes
   useEffect(() => {
     setPage(1);
   }, [selectedCategory]);
 
-  // Load more when scrolling to bottom
   useEffect(() => {
     if (loadMoreInView && hasMore && !isLoading) {
       setPage(prev => prev + 1);
@@ -202,7 +195,7 @@ const Design = () => {
             ))}
           </div>
           
-          {/* Load more trigger */}
+          {}
           {hasMore && (
             <div 
               ref={loadMoreRef}

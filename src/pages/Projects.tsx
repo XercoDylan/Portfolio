@@ -169,7 +169,6 @@ const Projects = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Set loading to false after a short delay
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 500);

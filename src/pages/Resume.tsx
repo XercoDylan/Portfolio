@@ -5,14 +5,12 @@ const Resume = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Preload the PDF
     const link = document.createElement('link');
     link.rel = 'preload';
     link.href = '/resume.pdf';
     link.as = 'object';
     document.head.appendChild(link);
 
-    // Add load event listener to iframe
     const handleIframeLoad = () => {
       setIsLoading(false);
     };

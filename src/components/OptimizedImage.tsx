@@ -14,10 +14,8 @@ const OptimizedImage = ({ src, alt, className = '', onClick }: OptimizedImagePro
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    // Create a new image object to preload
     const img = new Image();
     
-    // Set up event handlers
     img.onload = () => {
       setImageSrc(src);
       setIsLoading(false);
@@ -28,10 +26,8 @@ const OptimizedImage = ({ src, alt, className = '', onClick }: OptimizedImagePro
       setIsLoading(false);
     };
     
-    // Start loading the image
     img.src = src;
     
-    // Cleanup
     return () => {
       img.onload = null;
       img.onerror = null;
@@ -43,19 +39,19 @@ const OptimizedImage = ({ src, alt, className = '', onClick }: OptimizedImagePro
       className={`relative ${className}`}
       onClick={onClick}
     >
-      {/* Blur placeholder */}
+      {}
       {isLoading && (
         <div className="absolute inset-0 bg-code-bg animate-pulse" />
       )}
       
-      {/* Error placeholder */}
+      {}
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-code-bg">
           <span className="text-terminal-error">Failed to load image</span>
         </div>
       )}
       
-      {/* Actual image */}
+      {}
       {imageSrc && (
         <motion.img
           src={imageSrc}

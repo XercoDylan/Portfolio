@@ -23,7 +23,7 @@ const Navbar = () => {
             <span className="text-code-comment">//</span> portfolio
           </Link>
 
-          {/* Desktop Navigation */}
+          {}
           <div className="hidden md:flex space-x-8">
             {navItems.map((item) => (
               <Link
@@ -40,7 +40,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Navigation Button */}
+          {}
           <button
             className="md:hidden text-terminal-text hover:text-terminal-accent"
             onClick={() => setIsOpen(!isOpen)}
@@ -53,7 +53,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {}
         <motion.div
           initial={false}
           animate={isOpen ? 'open' : 'closed'}
